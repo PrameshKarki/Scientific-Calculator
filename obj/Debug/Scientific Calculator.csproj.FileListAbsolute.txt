@@ -1,0 +1,16 @@
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Debug\Scientific Calculator.exe.config
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Debug\Scientific Calculator.exe
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Debug\Scientific Calculator.pdb
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Debug\Guna.UI2.dll
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Debug\Scientific Calculator.csprojAssemblyReference.cache
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Debug\Scientific_Calculator.Properties.Resources.resources
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Debug\Scientific Calculator.csproj.GenerateResource.cache
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Debug\Scientific Calculator.csproj.CoreCompileInputs.cache
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Debug\Scientific Calculator.csproj.CopyComplete
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Debug\Scientific Calculator.exe
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Debug\Scientific Calculator.pdb
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Debug\Scientific_Calculator.MainForm.resources
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Debug\Scientific Calculator.exe.manifest
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Debug\Scientific Calculator.application
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Debug\Scientific Calculator.exe.manifest
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Debug\Scientific Calculator.application
