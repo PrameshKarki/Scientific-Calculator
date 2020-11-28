@@ -1,4 +1,9 @@
-﻿using Scientific_Calculator.Classes;
+﻿/*Before editing any part of the code you must keep following ideas that i had implemented in your mind:
+ 1.I have assumed buttons as a element of matrix
+ 2.
+*/
+
+using Scientific_Calculator.Classes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,12 +13,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace Scientific_Calculator
 {
     public partial class MainForm : Form
     {
-        //To Take the status of current command and current status index
+        //To Take the status of current command and current button index
         private string currentCommand = "";
         private string currentBtnIndex = "";
 
@@ -29,6 +35,9 @@ namespace Scientific_Calculator
         //status of calculator mode i.e Radian or Degree
         bool isDegree = false;
 
+        //Evluation string which is used in the evluation
+        string evaluationString = "";
+
         //Constructor
         public MainForm()
         {
@@ -38,26 +47,28 @@ namespace Scientific_Calculator
         //Form Load Event
         private void frmMain_Load(object sender, EventArgs e)
         {
-
-
             //To focus TextBox initially
             txtBoxExpression.Select();
-
+            //Guna Shadow
             guna2ShadowForm1.SetShadowForm(this);
+            //For the drag control feature
             guna2DragControl1.TargetControl = this;
         }
+
         //Method to Update expression on Text Field
         private void UpdateExpression(string ex)
         {
+            //Update expression in txtBoxExpression as well as evaluationString
+            evaluationString += ex;
             txtBoxExpression.Text += ex;
         }
-
 
         //Method to evaluate Expression
         private void Eval()
         {
             try
             {
+                //This ensures at least one button which performs some function is clicked
                 if (currentCommand != "")
                     Parse();
             }
@@ -66,17 +77,15 @@ namespace Scientific_Calculator
                 //If you want to display error message you can display from here
             }
 
-            //Take expression from text field
-            string expression = txtBoxExpression.Text;
 
             //Instantiating datatable
             DataTable dt = new DataTable();
             try
             {
                 //Using Compute inbuilt method of datatable
-                string result = dt.Compute(expression, String.Empty).ToString();
+                double result = Convert.ToDouble(dt.Compute(evaluationString, String.Empty));
                 //Displaying result
-                txtBoxResult.Text = result;
+                txtBoxResult.Text = Math.Round(result, 5).ToString();
             }
             catch (Exception)
             {
@@ -110,15 +119,21 @@ namespace Scientific_Calculator
             txtBoxExpression.Text = "";
             txtBoxResult.Text = "";
             countOfBracket = 0;
+            //Clear evaluationString as well
+            evaluationString = "";
         }
 
         //Method to Swap Values between Two text fields
         private void SwapValues()
         {
+            //Swap values in evaluation string as well
+            evaluationString = txtBoxResult.Text;
             txtBoxExpression.Text = txtBoxResult.Text;
             txtBoxResult.Text = "";
             //Reset count of bracket and change sign button
             countOfBracket = 0;
+            //Place Ibeam at the last of string
+            txtBoxExpression.Select(txtBoxExpression.Text.Length, 0);
 
 
         }
@@ -126,14 +141,34 @@ namespace Scientific_Calculator
         //Method to handle Click event on BackSpace Button
         private void btnBackSpace_Click(object sender, EventArgs e)
         {
+            BackSpaceClick();
+        }
+        private void BackSpaceClick()
+        {
             if (txtBoxExpression.Text.Length > 0)
             {
                 //Temprorarily Hold Expression
                 string tempExpression = txtBoxExpression.Text;
+
+                //If removed char is ) then
+                if (tempExpression[tempExpression.Length - 1] == '(')
+                {
+                    countOfBracket = 0;
+                }
+                //If removed char is ) then
+                if (tempExpression[tempExpression.Length - 1] == ')')
+                {
+                    countOfBracket++;
+                }
                 txtBoxExpression.Text = tempExpression.Remove(tempExpression.Length - 1);
+                //Set updated value in evaluationString as well
+                evaluationString =txtBoxExpression.Text;
                 //Clear ResultTextBox
                 txtBoxResult.Text = "";
             }
+            txtBoxExpression.Select(txtBoxExpression.Text.Length, 0);
+           //Then evaluate again
+            Eval();
         }
 
 
@@ -148,6 +183,12 @@ namespace Scientific_Calculator
         //Handling Click Events on brackets button
         private void btnBrackets_Click(object sender, EventArgs e)
         {
+            //Regular Expression to check if string ends with any algebric opertaor
+            Regex regex = new Regex(@"[+\-% */]$");
+            //Regular expression to check if strikng ends with numeric digit
+            Regex numericEnd = new Regex(@"\d$");
+
+            //if Expression is empty
             if (countOfBracket == 0 && txtBoxExpression.Text.Length == 0)
             {
                 UpdateExpression("(");
@@ -160,12 +201,19 @@ namespace Scientific_Calculator
                 UpdateExpression("(");
                 countOfBracket++;
             }
-            else if (countOfBracket == 0 && txtBoxExpression.Text.Length != 0)
+            //If string ends with algebric operator
+            else if (regex.IsMatch(txtBoxExpression.Text))
+            {
+                UpdateExpression("(");
+                countOfBracket++;
+            }
+            //
+            else if (countOfBracket == 0 && numericEnd.IsMatch(txtBoxExpression.Text))
             {
                 UpdateExpression("*(");
                 countOfBracket++;
-            }
 
+            }
             //Otherwise push closing bracket
             else
             {
@@ -180,14 +228,13 @@ namespace Scientific_Calculator
         //Handling Click Events on ChangeSign Button
         private void btnChangeSign_Click(object sender, EventArgs e)
         {
-
+            Regex regex = new Regex(@"[+\-%*/(]$");
             if (txtBoxExpression.Text.Length == 0)
             {
                 UpdateExpression("(-");
                 countOfBracket++;
             }
-            //Replace it with regular expression
-            else if (txtBoxExpression.Text.EndsWith("+") || txtBoxExpression.Text.EndsWith("-") || txtBoxExpression.Text.EndsWith("*") || txtBoxExpression.Text.EndsWith("/") || txtBoxExpression.Text.EndsWith("%") || txtBoxExpression.Text.EndsWith("+") || txtBoxExpression.Text.EndsWith("("))
+            else if (regex.IsMatch(txtBoxExpression.Text))
 
             {
                 UpdateExpression("(-");
@@ -229,31 +276,31 @@ namespace Scientific_Calculator
                 */
                 case 102://Square Root
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("sqrt(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("sqrt(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where sqrt( length is 5 so
                         for (index = (startPosition + 5); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.SquareRoot(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
                     }
                 case 110://sin
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("sin(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("sin(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where sin( length is 4 so
                         for (index = (startPosition + 4); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
@@ -261,20 +308,20 @@ namespace Scientific_Calculator
                         if (isDegree) { number = Calc.DegreeToRadian(number); }
                         //Round result
                         result = Math.Round(Calc.Sin(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 111://cos
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("cos(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("cos(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where cos( length is 4 so
                         for (index = (startPosition + 4); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
@@ -283,20 +330,20 @@ namespace Scientific_Calculator
 
                         //Round result
                         result = Math.Round(Calc.Cos(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 112://tan
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("tan(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("tan(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where tan( length is 4 so
                         for (index = (startPosition + 4); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
@@ -305,115 +352,115 @@ namespace Scientific_Calculator
 
                         //Round result
                         result = Math.Round(Calc.Tan(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 120://ln
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("ln(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("ln(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where ln( length is 3 so
                         for (index = (startPosition + 3); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.Ln(number), 4);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 121://log
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("log(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("log(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where log( length is 4 so
                         for (index = (startPosition + 4); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.Log(number), 4);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 130://e^
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("e^(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("e^(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where e^( length is 3 so
                         for (index = (startPosition + 3); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
-                        result = Math.Round(Calc.Exponential(number), 6);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        result = Math.Round(Calc.Exponential(number), 5);
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 140://absolute
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("abs(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("abs(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where abs( length is 4 so
                         for (index = (startPosition + 4); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
-                        result = Math.Round(Calc.Absolute(number));
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        result = Calc.Absolute(number);
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 202://Cube root
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("cbrt(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("cbrt(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where cbrt( length is 5 so
                         for (index = (startPosition + 5); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.CubeRoot(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 210://SineInverse
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("Asin(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("Asin(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where Asin( length is 5 so
                         for (index = (startPosition + 5); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
@@ -422,19 +469,19 @@ namespace Scientific_Calculator
                         //Check calculator is in degree mode or not
                         if (isDegree) { result = Math.Round(Calc.RadianToDegree(result), 3); }
 
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
                     }
                 case 211://CosInverse
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("Acos(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("Acos(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where Acos( length is 5 so
                         for (index = (startPosition + 5); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
@@ -442,20 +489,20 @@ namespace Scientific_Calculator
                         result = Math.Round(Calc.CosInverse(number), 2);
                         //Check calculator is in degree mode or not
                         if (isDegree) { result = Math.Round(Calc.RadianToDegree(result), 3); }
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 212://TanInverse
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("Atan(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("Atan(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where Atan( length is 5 so
                         for (index = (startPosition + 5); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
@@ -463,141 +510,141 @@ namespace Scientific_Calculator
                         result = Math.Round(Calc.TanInverse(number), 2);
                         //Check calculator is in degree mode or not
                         if (isDegree) { result = Math.Round(Calc.RadianToDegree(result), 3); }
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 220://Sine Hyperbolic
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("sinh(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("sinh(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where sinh( length is 5 so
                         for (index = (startPosition + 5); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.SineHyperbolic(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 221://Cos Hyperbolic
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("cosh(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("cosh(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where cosh( length is 5 so
                         for (index = (startPosition + 5); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.CosHyperbolic(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 222://Tan Hyperbolic
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("tanh(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("tanh(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where tanh( length is 5 so
                         for (index = (startPosition + 5); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.TanHyperbolic(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 230://Inverse Sine Hyperbolic
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("Asinh(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("Asinh(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where Asinh( length is 6 so
                         for (index = (startPosition + 6); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.InverseSineHyperbolic(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 231://Inverse Cos Hyperbolic
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("Acosh(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("Acosh(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where Acosh( length is 6 so
                         for (index = (startPosition + 6); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.InverseCosHyperbolic(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 232://Inverse Tan Hyperbolic
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("Atanh(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("Atanh(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where Atanh( length is 6 so
                         for (index = (startPosition + 6); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.InverseTanHyperbolic(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
                 case 240://2^
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("2^(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("2^(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where 2^( length is 3 so
                         for (index = (startPosition + 3); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = double.Parse(parsedNumber);
                         //Round result
                         result = Math.Round(Calc.PowerOf2(number), 2);
-                        //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        //Than replaces in evaluationString
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
@@ -607,47 +654,47 @@ namespace Scientific_Calculator
                 case 241:
                     {
                         string givenNumber = "";
-                        startPosition = txtBoxExpression.Text.IndexOf("^(");
-                        endPosition = txtBoxExpression.Text.IndexOf(")", startPosition);
+                        startPosition = evaluationString.IndexOf("^(");
+                        endPosition = evaluationString.IndexOf(")", startPosition);
                         //Where ^( length is 2 so
                         for (index = (startPosition + 2); index < endPosition; index++)
                         {
                             //Getting Number Lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         double power = double.Parse(parsedNumber);
                         //To get the actual number
                         index = startPosition - 1;
 
                         //Replace this with regular expression for short hand
-                        while (index >= 0 && (txtBoxExpression.Text[index] != '+' && txtBoxExpression.Text[index] != '-' && txtBoxExpression.Text[index] != '*' && txtBoxExpression.Text[index] != '/' && txtBoxExpression.Text[index] != '%' && txtBoxExpression.Text[index] != '(' && txtBoxExpression.Text[index] != ')'))
+                        while (index >= 0 && (evaluationString[index] != '+' && txtBoxExpression.Text[index] != '-' && txtBoxExpression.Text[index] != '*' && txtBoxExpression.Text[index] != '/' && txtBoxExpression.Text[index] != '%' && txtBoxExpression.Text[index] != '(' && txtBoxExpression.Text[index] != ')'))
                         {
-                            givenNumber += txtBoxExpression.Text[index];
+                            givenNumber += evaluationString[index];
                             index--;
                         }
                         //Result
                         result = Math.Round(Calc.Power(double.Parse(givenNumber), power), 2);
                         //Replace result on txtBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(index + 1, endPosition - index).Insert(index + 1, result.ToString());
+                        evaluationString = evaluationString.Remove(index + 1, endPosition - index).Insert(index + 1, result.ToString());
 
                         break;
                     }
                 case 242://Factorial
                     {
-                        startPosition = txtBoxExpression.Text.IndexOf("facto(");
-                        endPosition = txtBoxExpression.Text.IndexOf(')', startPosition);
+                        startPosition = evaluationString.IndexOf("facto(");
+                        endPosition = evaluationString.IndexOf(')', startPosition);
                         //Where ( length is 6 so
                         for (index = (startPosition + 6); index < endPosition; index++)
                         {
                             //Getting Number lies inside Bracket
-                            parsedNumber += txtBoxExpression.Text[index];
+                            parsedNumber += evaluationString[index];
                         }
                         //Parsing into float
                         number = Math.Abs(double.Parse(parsedNumber));
                         //Round result
                         result = Calc.Factorial(number);
                         //Than replaces in txBoxExpression
-                        txtBoxExpression.Text = txtBoxExpression.Text.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
+                        evaluationString = evaluationString.Remove(startPosition, (endPosition - startPosition + 1)).Insert(startPosition, result.ToString());
                         break;
 
                     }
@@ -669,8 +716,12 @@ namespace Scientific_Calculator
             ParseFunctionText(b.Text, b.Name);
 
         }
+        //Method to parse function text
         private void ParseFunctionText(string Text, string name)
         {
+            Regex regex = new Regex(@"[+\-% */]$");
+
+
             //Declaration and Initialization of variable
             string templateString = "", command = Text;
             //Checking command Text to perform operation
@@ -688,8 +739,7 @@ namespace Scientific_Calculator
             //To get Last Two char from templateString
             currentBtnIndex = templateString.Substring(templateString.Length - 2);
 
-            //Replace it with regular expression
-            if (txtBoxExpression.Text.Length == 0 || txtBoxExpression.Text.EndsWith("+") || txtBoxExpression.Text.EndsWith("-") || txtBoxExpression.Text.EndsWith("*") || txtBoxExpression.Text.EndsWith("/") || txtBoxExpression.Text.EndsWith("%"))
+            if (txtBoxExpression.Text.Length == 0 || regex.IsMatch(txtBoxExpression.Text))
             {
                 //Updating Expression
                 UpdateExpression(command + "(");
@@ -750,10 +800,11 @@ namespace Scientific_Calculator
         //When button of fifth row and 2nd column is clicked
         private void btn41_Click(object sender, EventArgs e)
         {
+            Regex regex = new Regex(@"[+\-% */]$");
+
             if (!isSecondPage)
             {
-                //Replace it with regular expression
-                if (txtBoxExpression.Text.Length == 0 || txtBoxExpression.Text.EndsWith("+") || txtBoxExpression.Text.EndsWith("-") || txtBoxExpression.Text.EndsWith("*") || txtBoxExpression.Text.EndsWith("/") || txtBoxExpression.Text.EndsWith("%"))
+                if (txtBoxExpression.Text.Length == 0 || regex.IsMatch(txtBoxExpression.Text))
                 {
                     UpdateExpression(Calc.PI().ToString());
                 }
@@ -774,10 +825,12 @@ namespace Scientific_Calculator
         //When button of fifth row and 3rd column is clicked
         private void btn42_Click(object sender, EventArgs e)
         {
+            Regex regex = new Regex(@"[+\-% */]$");
+
             if (!isSecondPage)
             {
-                //Replace it with regular expression
-                if (txtBoxExpression.Text.Length == 0 || txtBoxExpression.Text.EndsWith("+") || txtBoxExpression.Text.EndsWith("-") || txtBoxExpression.Text.EndsWith("*") || txtBoxExpression.Text.EndsWith("/") || txtBoxExpression.Text.EndsWith("%"))
+
+                if (txtBoxExpression.Text.Length == 0 || regex.IsMatch(txtBoxExpression.Text))
                 {
                     UpdateExpression(Calc.E().ToString());
                 }
@@ -802,9 +855,11 @@ namespace Scientific_Calculator
         //When button of third row and third column is clicked
         private void btn22_Click(object sender, EventArgs e)
         {
+            Regex regex = new Regex(@"[+\-% */]$");
+
             if (!isSecondPage)//I.e When (1/x)button is clicked
             {
-                if (txtBoxExpression.Text.Length == 0 || txtBoxExpression.Text.EndsWith("+") || txtBoxExpression.Text.EndsWith("-") || txtBoxExpression.Text.EndsWith("*") || txtBoxExpression.Text.EndsWith("/") || txtBoxExpression.Text.EndsWith("%"))
+                if (txtBoxExpression.Text.Length == 0 || regex.IsMatch(txtBoxExpression.Text))
                 {
                     UpdateExpression("1/");
                 }
@@ -851,14 +906,15 @@ namespace Scientific_Calculator
         //Method to parse power function text
         private void ParsePowerFunctionText(string command, string Name)
         {
-            //CheckBox Whether txtBoxExpression is empty or not and it doesn't ends with /,*,-,+,%,(,)
+            Regex regex = new Regex(@"[+\-% */()]$");
+
             string expression = txtBoxExpression.Text;
             //To Save the status of currently which button is clicked
             currentBtnIndex = Name.Substring(Name.Length - 2);
             currentCommand = command;
 
-            //Replace it with regular expression
-            if (!(expression.Length == 0 || expression.EndsWith("/") || expression.EndsWith("*") || expression.EndsWith("-") || expression.EndsWith("+") || expression.EndsWith("(") || expression.EndsWith(")")))
+            //Check Whether txtBoxExpression is empty or not and it doesn't ends with /,*,-,+,%,(,)
+            if (!(expression.Length == 0 || regex.IsMatch(txtBoxExpression.Text)))
             {
                 if (command == "x^2")
                 {
@@ -898,42 +954,43 @@ namespace Scientific_Calculator
         {
             this.Close();
         }
-
+        //Minimize button
         private void btnMinimize_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
         }
 
+        //Validate key press on txtBoxExpression
         private void txtBoxExpression_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)Keys.Enter)
             {
                 SwapValues();
-                //To set the Ibeam always right position
-                txtBoxExpression.Select(txtBoxExpression.Text.Length, 0);
-                return;
             }
-            for (int h = 58; h <= 127; h++)
-            {
-
-                if (e.KeyChar == h)
-                {
-                    e.Handled = true;
-                }
+            else if (e.KeyChar == (char)Keys.Back) {
+                BackSpaceClick();
+                e.Handled = true;
             }
-            for (int k = 32; k <= 47; k++)
+            else if (e.KeyChar == 37 || e.KeyChar == 40 || e.KeyChar == 41 || e.KeyChar == 42 || e.KeyChar == 43 || e.KeyChar == 45 || e.KeyChar == 46 || e.KeyChar == 47)
             {
-                if (e.KeyChar == 37 || e.KeyChar == 40 || e.KeyChar == 41 || e.KeyChar == 42 || e.KeyChar == 43 || e.KeyChar == 45 || e.KeyChar == 47)
+                e.Handled = false;
+                evaluationString += ((char)e.KeyChar).ToString();
+            }
+            else
+            {
+                bool status = !char.IsDigit(e.KeyChar);
+                if (status) { e.Handled = true; }
+                else
                 {
-                    continue;
+                        evaluationString += ((char)e.KeyChar).ToString();
+                         e.Handled = false;
                 }
 
-                else if (e.KeyChar == k)
-                    e.Handled = true;
             }
 
         }
 
-
     }
 }
+
+//Pramesh Karki

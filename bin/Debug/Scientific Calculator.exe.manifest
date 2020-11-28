@@ -55,14 +55,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Scientific Calculator.exe" size="391696">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Scientific Calculator.exe" size="390160">
       <assemblyIdentity name="Scientific Calculator" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>32/32gqAaj7MUq4UCJX2QDiHLoQQCb0T4Zy1l9CHWXw=</dsig:DigestValue>
+        <dsig:DigestValue>tILHnb54Cacc8Azgt9xjo7+B5tneXUJ7LmWrxkSzHGY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

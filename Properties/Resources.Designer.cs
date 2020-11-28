@@ -113,6 +113,26 @@ namespace Scientific_Calculator.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap formula_fx_50px {
+            get {
+                object obj = ResourceManager.GetObject("formula_fx_50px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_vertical_32px {
+            get {
+                object obj = ResourceManager.GetObject("menu_vertical_32px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap minus_24px {
             get {
                 object obj = ResourceManager.GetObject("minus_24px", resourceCulture);
@@ -126,6 +146,26 @@ namespace Scientific_Calculator.Properties {
         internal static System.Drawing.Bitmap multiply_50px {
             get {
                 object obj = ResourceManager.GetObject("multiply_50px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap sidebar_menu_80px {
+            get {
+                object obj = ResourceManager.GetObject("sidebar_menu_80px", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap squared_menu_24px {
+            get {
+                object obj = ResourceManager.GetObject("squared_menu_24px", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
