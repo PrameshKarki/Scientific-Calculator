@@ -162,12 +162,12 @@ namespace Scientific_Calculator
                 }
                 txtBoxExpression.Text = tempExpression.Remove(tempExpression.Length - 1);
                 //Set updated value in evaluationString as well
-                evaluationString =txtBoxExpression.Text;
+                evaluationString = txtBoxExpression.Text;
                 //Clear ResultTextBox
                 txtBoxResult.Text = "";
             }
             txtBoxExpression.Select(txtBoxExpression.Text.Length, 0);
-           //Then evaluate again
+            //Then evaluate again
             Eval();
         }
 
@@ -967,7 +967,8 @@ namespace Scientific_Calculator
             {
                 SwapValues();
             }
-            else if (e.KeyChar == (char)Keys.Back) {
+            else if (e.KeyChar == (char)Keys.Back)
+            {
                 BackSpaceClick();
                 e.Handled = true;
             }
@@ -982,12 +983,118 @@ namespace Scientific_Calculator
                 if (status) { e.Handled = true; }
                 else
                 {
-                        evaluationString += ((char)e.KeyChar).ToString();
-                         e.Handled = false;
+                    evaluationString += ((char)e.KeyChar).ToString();
+                    e.Handled = false;
                 }
 
             }
 
+        }
+
+        private void btnShowSideBar_Click_1(object sender, EventArgs e)
+        {
+            if (sideBar.Visible == false)
+            {
+                transition.ShowSync(sideBar);
+            }
+            else
+            {
+                transition.HideSync(sideBar);
+            }
+
+        }
+        //Button to close sidebar
+        private void btnCloseSideBar_Click(object sender, EventArgs e)
+        {
+            transition.HideSync(sideBar);
+        }
+        //Button to close panel
+        private void btnCLosePanel_Click(object sender, EventArgs e)
+        {
+            verticalTransition.HideSync(temperatureConversionBanner);
+        }
+        //Change label text
+        private void radioButtonFirst_CheckedChanged(object sender, EventArgs e)
+        {
+            ResetField();
+            if (radioButtonFirst.Checked)
+            {
+                labelFirst.Location = new Point(152, 189);
+                labelSecond.Location = new Point(119, 235);
+                labelFirst.Text = "Celcius:";
+                labelSecond.Text = "Fahrenheit:";
+            }
+        }
+        //Change label text
+        private void radioButtonSecond_CheckedChanged(object sender, EventArgs e)
+        {
+            ResetField();
+            if (radioButtonSecond.Checked)
+            {
+                labelFirst.Location = new Point(113, 184);
+                labelSecond.Location = new Point(145, 235);
+                labelFirst.Text = "Fahrenheit:";
+                labelSecond.Text = "Celcius:";
+            }
+        }
+        //Click on Temerature converter button
+        private void btnTemperatureConverter_Click(object sender, EventArgs e)
+        {
+            transition.HideSync(sideBar);
+            verticalTransition.ShowSync(temperatureConversionBanner);
+        }
+        //Reset fields
+        private void ResetField()
+        {
+            txtBoxFirst.Text = "";
+            txtBoxSecond.Text = "";
+        }
+        //Conversion of temperature
+        private void txtBoxFirst_TextChanged(object sender, EventArgs e)
+        {
+            if (radioButtonFirst.Checked)
+            {
+                try
+                {
+                    string celciusInp = txtBoxFirst.Text;
+                    if (celciusInp == "")
+                    {
+                        txtBoxSecond.Text = "";
+                    }
+                    else
+                    {
+                        double celciusInput = double.Parse(celciusInp);
+                        txtBoxSecond.Text = Math.Round(((celciusInput * 9) / 5 + 32), 2).ToString();
+
+                    }
+
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+            else if (radioButtonSecond.Checked)
+            {
+                try
+                {
+                    string fahrenheitInp = txtBoxFirst.Text;
+                    if (fahrenheitInp == "")
+                    {
+                        txtBoxSecond.Text = "";
+                    }
+                    else
+                    {
+                        double fahrenheitInput = double.Parse(fahrenheitInp);
+                        txtBoxSecond.Text = Math.Round(((fahrenheitInput - 32) * (double)5 / 9), 2).ToString();
+
+                    }
+
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
 
     }
