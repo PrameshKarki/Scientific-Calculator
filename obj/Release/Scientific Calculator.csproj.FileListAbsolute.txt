@@ -1,0 +1,16 @@
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Release\Scientific Calculator.exe.config
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Release\Scientific Calculator.exe.manifest
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Release\Scientific Calculator.application
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Release\Scientific Calculator.exe
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Release\Scientific Calculator.pdb
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\bin\Release\Guna.UI2.dll
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Release\Scientific Calculator.csprojAssemblyReference.cache
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Release\Scientific_Calculator.MainForm.resources
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Release\Scientific_Calculator.Properties.Resources.resources
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Release\Scientific Calculator.csproj.GenerateResource.cache
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Release\Scientific Calculator.csproj.CoreCompileInputs.cache
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Release\Scientific Calculator.exe.manifest
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Release\Scientific Calculator.application
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Release\Scientific Calculator.csproj.CopyComplete
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Release\Scientific Calculator.exe
+C:\Users\Pramesh_Karki\source\repos\Scientific Calculator\Scientific Calculator\obj\Release\Scientific Calculator.pdb
