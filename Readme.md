@@ -15,14 +15,13 @@ additional feature and some are on the way
  * Temperature convertor and many more advanced features are on the way
  * Better user experience
 
-### Snapshots:
-![Scientific Calculator](/Snapshots/1.JPG)
-![Scientific Calculator](/Snapshots/2.JPG)
-![Scientific Calculator](/Snapshots/3.JPG)
-![Scientific Calculator](/Snapshots/4.JPG)
-![Scientific Calculator](/Snapshots/5.JPG)
-![Scientific Calculator](/Snapshots/6.JPG)
-![Scientific Calculator](/Snapshots/7.JPG)
-![Scientific Calculator](/Snapshots/8.JPG)
-![Scientific Calculator](/Snapshots/9.JPG)
-
+### Screenshots:
+<img src="Screenshots\1.JPG" alt="Screenshot" width=200>
+<img src="Screenshots\2.JPG" alt="Screenshot" width=200>
+<img src="Screenshots\3.JPG" alt="Screenshot" width=200>
+<img src="Screenshots\4.JPG" alt="Screenshot" width=200>
+<img src="Screenshots\5.JPG" alt="Screenshot" width=200>
+<img src="Screenshots\6.JPG" alt="Screenshot" width=200>
+<img src="Screenshots\7.JPG" alt="Screenshot" width=200>
+<img src="Screenshots\8.JPG" alt="Screenshot" width=200>
+<img src="Screenshots\9.JPG" alt="Screenshot" width=200>
